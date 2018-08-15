@@ -35,41 +35,29 @@ class Customer
   end
 
   def delete
-    db = PG.connect ({dbname: 'pizza_shop', host: 'localhost'})
     sql = "DELETE FROM customers WHERE
     id = $1"
     values = [@id]
-    db.prepare("delete", sql)
-    db.exec_prepared("delete", values)
-    db.close()
+    returned_array = SqlRunner.run(sql, values)
   end
 
   def find_by_order_id()
-    db = PG.connect ({dbname: 'pizza_shop', host: 'localhost'})
     sql = "SELECT * FROM orders
     WHERE customer_order_id = $1"
     values = [@id]
-    db.prepare("find_by_order_id", sql)
-    found_orders = db.exec_prepared("find_by_order_id", values)
-    db.close()
-    return found_orders.map {|order| PizzaOrder.new(order)}
+    returned_array = SqlRunner.run(sql, values)
+    return returned_array.map {|order| PizzaOrder.new(order)}
   end
 
   def Customer.all
-    db = PG.connect({dbname: 'pizza_shop', host: 'localhost'})
     sql = "SELECT * FROM customers"
-    db.prepare("all", sql)
-    customers = db.exec_prepared("all")
-    db.close()
-    return customers.map {|customer| Customer.new(customer)}
+    returned_array = SqlRunner.run(sql)
+    return returned_array.map {|customer| Customer.new(customer)}
   end
 
   def Customer.delete_all
-    db = PG.connect ({dbname: 'pizza_shop', host: 'localhost'})
     sql = "DELETE FROM customers"
-    db.prepare("delete_all", sql)
-    db.exec_prepared("delete_all")
-    db.close()
+    returned_array = SqlRunner.run(sql)
   end
 
 end
